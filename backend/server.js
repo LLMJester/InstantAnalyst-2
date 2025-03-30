@@ -347,7 +347,7 @@ app.post('/api/transcribe-simple', (req, res) => {
 if (isProduction) {
   try {
     const frontendPath = path.join(__dirname, '../frontend/dist');
-    console.log('Serving frontend from:', frontendPath);
+    console.log('Checking for frontend build at:', frontendPath);
     
     if (fs.existsSync(frontendPath) && fs.existsSync(path.join(frontendPath, 'index.html'))) {
       console.log('Frontend build files found, serving those');
@@ -357,27 +357,22 @@ if (isProduction) {
       app.get('/app*', (req, res) => {
         res.sendFile(path.join(frontendPath, 'index.html'));
       });
+    } else {
+      console.log('Frontend build not found, will use fallback HTML');
     }
   } catch (err) {
-    console.error('Error setting up frontend static files:', err);
+    console.error('Error checking frontend build:', err);
   }
 }
 
+// Serve static files from the root directory
+app.use(express.static(path.join(__dirname, '..')));
+
 // Serve static index.html as fallback for all unmatched routes
 app.get('*', (req, res) => {
-  try {
-    const indexPath = path.join(__dirname, '../index.html');
-    if (fs.existsSync(indexPath)) {
-      console.log('Serving fallback index.html');
-      res.sendFile(indexPath);
-    } else {
-      console.log('Fallback index.html not found');
-      res.status(404).send('Not found');
-    }
-  } catch (error) {
-    console.error('Error serving fallback index.html:', error);
-    res.status(500).send('Server error');
-  }
+  const indexPath = path.join(__dirname, '../index.html');
+  console.log('Serving fallback index.html from:', indexPath);
+  res.sendFile(indexPath);
 });
 
 // Error handling middleware
