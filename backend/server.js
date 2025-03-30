@@ -343,26 +343,31 @@ app.post('/api/transcribe-simple', (req, res) => {
   });
 });
 
-// Try to serve frontend build files first if they exist
+// Replace the frontend serving sections with this simpler code
 if (isProduction) {
-  try {
-    const frontendPath = path.join(__dirname, '../frontend/dist');
-    console.log('Checking for frontend build at:', frontendPath);
-    
-    if (fs.existsSync(frontendPath) && fs.existsSync(path.join(frontendPath, 'index.html'))) {
-      console.log('Frontend build files found, serving those');
-      app.use(express.static(frontendPath));
-      
-      // Handle SPA routing for Vue app
-      app.get('/app*', (req, res) => {
-        res.sendFile(path.join(frontendPath, 'index.html'));
-      });
-    } else {
-      console.log('Frontend build not found, will use fallback HTML');
+  // Simple approach: just serve the frontend dist folder if it exists
+  const frontendPath = path.join(__dirname, '../frontend/dist');
+  console.log('Trying to serve frontend from:', frontendPath);
+  
+  // Handle static files first
+  app.use(express.static(frontendPath));
+  
+  // Then add a catch-all route for client-side routing
+  app.get('*', (req, res, next) => {
+    // Skip for API routes
+    if (req.path.startsWith('/api/')) {
+      return next();
     }
-  } catch (err) {
-    console.error('Error checking frontend build:', err);
-  }
+    
+    const indexPath = path.join(frontendPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      console.log('Serving Vue app index.html');
+      res.sendFile(indexPath);
+    } else {
+      console.log('Vue app index.html not found, continuing to next handler');
+      next();
+    }
+  });
 }
 
 // Serve static files from the root directory

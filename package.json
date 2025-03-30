@@ -1,8 +1,9 @@
 {
-    "name": "instant-analyst",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-      "start": "cd backend && node server.js"
-    }
+  "name": "instant-analyst-build",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "cd frontend && npm install && cd ../backend && npm install",
+    "build": "cd frontend && ./node_modules/.bin/vue-cli-service build",
+    "start": "cd backend && node server.js"
   }
+}
