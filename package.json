@@ -5,5 +5,8 @@
     "postinstall": "cd frontend && npm install && cd ../backend && npm install",
     "build": "cd frontend && ./node_modules/.bin/vue-cli-service build",
     "start": "cd backend && node server.js"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8"
   }
 }
