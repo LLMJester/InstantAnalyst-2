@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e  # Exit immediately if a command fails
 
-# Display current directory
 echo "Current directory: $(pwd)"
 echo "Listing files in root:"
 ls -la
@@ -18,15 +17,24 @@ echo "Current directory: $(pwd)"
 echo "Listing frontend directory:"
 ls -la
 
+echo "Package.json contents:"
+cat package.json
+
 echo "Installing frontend packages..."
 npm install
 
-# Build frontend - using Vue CLI
-echo "Building frontend with Vue CLI..."
-npm run build
+# Show installed packages
+echo "Showing installed node_modules:"
+ls -la node_modules/.bin
 
-# Verify build output - Vue CLI outputs to 'dist' directory
-echo "Checking build output:"
+# Build frontend - use npx to ensure vue-cli-service is found
+echo "Building frontend with npx..."
+npx vue-cli-service build
+
+# Verify build output
+echo "Checking build output directory:"
+ls -la || echo "Cannot list directory"
+echo "Checking dist directory contents (if it exists):"
 ls -la dist || echo "dist directory doesn't exist!"
 
 # Go back to root

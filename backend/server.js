@@ -342,16 +342,34 @@ app.post('/api/transcribe-simple', (req, res) => {
   });
 });
 
-// Serve static files from the frontend build folder if in production
+// Add this to your server.js, after the frontend path check
 if (isProduction) {
   const frontendPath = path.join(__dirname, '../frontend/dist');
   console.log('Serving frontend from:', frontendPath);
-  app.use(express.static(frontendPath));
   
-  // Handle SPA routing - serve index.html for any unmatched routes
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
-  });
+  // Check if frontend dist exists
+  try {
+    const fs = require('fs');
+    if (!fs.existsSync(frontendPath) || !fs.existsSync(path.join(frontendPath, 'index.html'))) {
+      console.log('WARNING: Frontend dist directory or index.html not found, using fallback');
+      // Serve static files from root as fallback
+      app.use(express.static(path.join(__dirname, '..')));
+      
+      // For SPA routing, serve root index.html for any unmatched routes
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../index.html'));
+      });
+    } else {
+      // Normal case - serve from frontend/dist
+      app.use(express.static(frontendPath));
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+      });
+    }
+  } catch (err) {
+    console.error('Error setting up static files:', err);
+    // Fallback to API-only mode
+  }
 }
 
 // Error handling middleware
