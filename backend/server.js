@@ -3,6 +3,7 @@ const cors = require('cors');
 const speech = require('@google-cloud/speech');
 const { VertexAI } = require('@google-cloud/vertexai');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 // Initialize Express
@@ -342,35 +343,42 @@ app.post('/api/transcribe-simple', (req, res) => {
   });
 });
 
-// Add this to your server.js, after the frontend path check
+// Try to serve frontend build files first if they exist
 if (isProduction) {
-  const frontendPath = path.join(__dirname, '../frontend/dist');
-  console.log('Serving frontend from:', frontendPath);
-  
-  // Check if frontend dist exists
   try {
-    const fs = require('fs');
-    if (!fs.existsSync(frontendPath) || !fs.existsSync(path.join(frontendPath, 'index.html'))) {
-      console.log('WARNING: Frontend dist directory or index.html not found, using fallback');
-      // Serve static files from root as fallback
-      app.use(express.static(path.join(__dirname, '..')));
-      
-      // For SPA routing, serve root index.html for any unmatched routes
-      app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../index.html'));
-      });
-    } else {
-      // Normal case - serve from frontend/dist
+    const frontendPath = path.join(__dirname, '../frontend/dist');
+    console.log('Serving frontend from:', frontendPath);
+    
+    if (fs.existsSync(frontendPath) && fs.existsSync(path.join(frontendPath, 'index.html'))) {
+      console.log('Frontend build files found, serving those');
       app.use(express.static(frontendPath));
-      app.get('*', (req, res) => {
+      
+      // Handle SPA routing for Vue app
+      app.get('/app*', (req, res) => {
         res.sendFile(path.join(frontendPath, 'index.html'));
       });
     }
   } catch (err) {
-    console.error('Error setting up static files:', err);
-    // Fallback to API-only mode
+    console.error('Error setting up frontend static files:', err);
   }
 }
+
+// Serve static index.html as fallback for all unmatched routes
+app.get('*', (req, res) => {
+  try {
+    const indexPath = path.join(__dirname, '../index.html');
+    if (fs.existsSync(indexPath)) {
+      console.log('Serving fallback index.html');
+      res.sendFile(indexPath);
+    } else {
+      console.log('Fallback index.html not found');
+      res.status(404).send('Not found');
+    }
+  } catch (error) {
+    console.error('Error serving fallback index.html:', error);
+    res.status(500).send('Server error');
+  }
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

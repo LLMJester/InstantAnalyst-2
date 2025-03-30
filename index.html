@@ -3,15 +3,96 @@
 <head>
   <title>InstantAnalyst</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
-    .container { max-width: 600px; margin: 0 auto; }
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+    h1 { color: #333; }
+    .btn { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+    textarea { width: 100%; height: 100px; margin: 10px 0; padding: 10px; }
+    .transcript { background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>InstantAnalyst</h1>
-    <p>Welcome to InstantAnalyst! The application is currently in maintenance mode.</p>
-    <p>Please try again later, or contact support if the issue persists.</p>
+  <h1>Requirements Voice Capture</h1>
+  <div>
+    <button id="recordBtn" class="btn">Start Recording</button>
+    <button id="clearBtn" class="btn" style="background: #f0ad4e;">Clear Transcript</button>
   </div>
+  
+  <div class="transcript">
+    <h3>Current Transcript</h3>
+    <div id="transcriptText"></div>
+  </div>
+  
+  <div>
+    <h3>Requirements List</h3>
+    <div id="requirementsList"></div>
+  </div>
+
+  <script>
+    // Simple frontend that connects to your API
+    document.getElementById('recordBtn').addEventListener('click', function() {
+      alert('This is a simplified static version. The real app requires building the Vue frontend.');
+    });
+    
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      fetch('/api/clear-transcript', { method: 'POST' })
+        .then(() => {
+          document.getElementById('transcriptText').textContent = '';
+        });
+    });
+    
+    // Get initial transcript
+    fetch('/api/transcript')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('transcriptText').textContent = data.transcript || 'No transcript yet';
+      });
+    
+    // Get requirements
+    fetch('/api/requirements')
+      .then(response => response.json())
+      .then(data => {
+        const reqList = document.getElementById('requirementsList');
+        reqList.innerHTML = '';
+        
+        if (data.length === 0) {
+          reqList.textContent = 'No requirements yet';
+        } else {
+          const table = document.createElement('table');
+          table.style.width = '100%';
+          table.style.borderCollapse = 'collapse';
+          
+          // Header
+          const thead = document.createElement('thead');
+          const headerRow = document.createElement('tr');
+          ['Requirement Name', 'Requirement Description'].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            th.style.textAlign = 'left';
+            th.style.padding = '8px';
+            th.style.borderBottom = '1px solid #ddd';
+            headerRow.appendChild(th);
+          });
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+          
+          // Body
+          const tbody = document.createElement('tbody');
+          data.forEach(req => {
+            const row = document.createElement('tr');
+            [req.name, req.description].forEach(text => {
+              const td = document.createElement('td');
+              td.textContent = text;
+              td.style.padding = '8px';
+              td.style.borderBottom = '1px solid #ddd';
+              row.appendChild(td);
+            });
+            tbody.appendChild(row);
+          });
+          table.appendChild(tbody);
+          
+          reqList.appendChild(table);
+        }
+      });
+  </script>
 </body>
 </html>
