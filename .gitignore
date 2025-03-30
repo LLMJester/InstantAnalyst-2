@@ -1,0 +1,23 @@
+# Environment variables
+.env
+*.env
+
+# Google Cloud credentials
+backend/gen-lang-client-0825075279-36a39b24cd8e.json
+
+# Dependencies
+node_modules/
+/node_modules
+*/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor directories
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
