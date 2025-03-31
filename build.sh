@@ -5,13 +5,13 @@ npm install
 
 # Install and build frontend
 cd ../frontend
+# Install all dependencies including Vue CLI and plugins
 npm install
-# Install Vue CLI explicitly if needed
-npm install --save-dev @vue/cli-service
+npm install --save-dev @vue/cli-plugin-babel @vue/cli-plugin-eslint
 
-# Use the local path to vue-cli-service
-echo "Running Vue build with full path..."
-./node_modules/.bin/vue-cli-service build || npx vue-cli-service build
+# Try a different approach - use Vue CLI through npx
+echo "Running Vue build..."
+npx --yes vue-cli-service build
 
 # Verify the build output
 echo "Checking build output..."
