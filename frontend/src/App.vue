@@ -96,9 +96,13 @@ export default {
   methods: {
     // API URL helper function
     getApiUrl() {
-      // Use fixed base URL instead of env variables to avoid potential issues
-      return this.apiBaseUrl;
-    },
+  // In production, use relative URLs (empty string)
+  if (process.env.NODE_ENV === 'production') {
+    return '';
+  }
+  // In development, use the hardcoded value
+  return this.apiBaseUrl;
+}
     
     async fetchRequirements() {
       try {
