@@ -6,8 +6,12 @@ npm install
 # Install and build frontend
 cd ../frontend
 npm install
-# Run the build script defined in package.json
-npm run build
+# Install Vue CLI explicitly if needed
+npm install --save-dev @vue/cli-service
+
+# Use the local path to vue-cli-service
+echo "Running Vue build with full path..."
+./node_modules/.bin/vue-cli-service build || npx vue-cli-service build
 
 # Verify the build output
 echo "Checking build output..."
