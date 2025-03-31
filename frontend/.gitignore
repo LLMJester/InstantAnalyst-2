@@ -1,6 +1,6 @@
 .DS_Store
 node_modules
-/dist
+# /dist    # Commented out to allow committing the built files
 
 
 # local env files
