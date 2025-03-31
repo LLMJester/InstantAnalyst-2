@@ -86,7 +86,7 @@ export default {
       recordingStartTime: null,
       recordingChunks: [],
       processingAudio: false,
-      apiBaseUrl: import.meta.env.VITE_API_URL || '', // Use environment variable
+      apiBaseUrl: process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000',
       recordingStartedAt: null,
       recordingDuration: 0,
       navigationHistory: [], // To store requirements for "previous" functionality
@@ -96,13 +96,8 @@ export default {
   methods: {
     // API URL helper function
     getApiUrl() {
-  // In production, use relative URLs (empty string)
-  if (process.env.NODE_ENV === 'production') {
-    return '';
-  }
-  // In development, use the hardcoded value
-  return this.apiBaseUrl;
-}
+      return this.apiBaseUrl;
+    },
     
     async fetchRequirements() {
       try {
