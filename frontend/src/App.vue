@@ -86,7 +86,7 @@ export default {
       recordingStartTime: null,
       recordingChunks: [],
       processingAudio: false,
-      apiBaseUrl: 'http://localhost:3000', // Fallback API URL
+      apiBaseUrl: import.meta.env.VITE_API_URL || '', // Use environment variable
       recordingStartedAt: null,
       recordingDuration: 0,
       navigationHistory: [], // To store requirements for "previous" functionality
